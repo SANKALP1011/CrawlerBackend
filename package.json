@@ -1,0 +1,18 @@
+{
+  "name": "sequnetilcrawlerbackend",
+  "version": "1.0.0",
+  "description": "This is the sequentila crwaler backend made for my web minning proiject",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sankalp",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22",
+    "request-promis": "^0.0.1-security",
+    "request-promise": "^4.2.6"
+  }
+}
