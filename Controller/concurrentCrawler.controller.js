@@ -14,19 +14,20 @@ module.exports = {
       const data = responses.map((response) => {
         const $ = cheerio.load(response.data);
         const title = $("title").text();
-        const paragraphs = $("p")
-          .map((i, el) => $(el).text())
-          .get();
+        const urlsToCrawl = $("a")
+          .map((i, el) => $(el).attr("href"))
+          .get()
+          .filter((url) => url.startsWith("http"));
         const fileName = response.config.url
           .replace(/[^a-z0-9]/gi, "_")
           .toLowerCase();
-        return { title, paragraphs, fileName };
+        return { title, urlsToCrawl, fileName };
       });
       await Promise.all(
-        data.map(({ title, paragraphs, fileName }) => {
+        data.map(({ title, urlsToCrawl, fileName }) => {
           return new Promise((resolve, reject) => {
             const stream = fs.createWriteStream(`${fileName}.json`);
-            stream.write(JSON.stringify({ title, paragraphs }, null, 2));
+            stream.write(JSON.stringify({ title, urlsToCrawl }, null, 2));
             stream.end();
             stream.on("finish", () => {
               console.log(`Saved ${fileName}.json`);

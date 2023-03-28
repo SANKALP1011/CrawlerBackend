@@ -5,17 +5,20 @@ const fs = require("fs");
 module.exports = {
   crawlUrl: async (req, res) => {
     const url = req.query.urL;
+    console.log(url);
     try {
       const response = await axios.get(url);
       const $ = cheerio.load(response.data);
 
       const title = $("title").text();
-      const paragraphs = $("p")
-        .map((i, el) => $(el).text())
-        .get();
+      const urlsToCrawl = $("a")
+        .map((i, el) => $(el).attr("href"))
+        .get()
+        .filter((url) => url.startsWith("http" | "https"));
+
       const data = {
         title,
-        paragraphs,
+        urlsToCrawl,
       };
 
       const fileName = url.replace(/[^a-z0-9]/gi, "_").toLowerCase();
@@ -25,6 +28,7 @@ module.exports = {
       stream.on("finish", () => {
         console.log(`Saved ${url} to ${fileName}.json`);
       });
+
       return res.status(200).json({
         Message: "Crawler is currently crawling , " + url,
       });
@@ -33,12 +37,3 @@ module.exports = {
     }
   },
 };
-
-
-links = {
-  'https://en.wikipedia.org/wiki/PageRank': ['https://en.wikipedia.org/wiki/Google', 'https://en.wikipedia.org/wiki/Hyperlink'],
-  'https://en.wikipedia.org/wiki/Google': ['https://en.wikipedia.org/wiki/PageRank', 'https://en.wikipedia.org/wiki/Search_engine'],
-  'https://en.wikipedia.org/wiki/Hyperlink': ['https://en.wikipedia.org/wiki/PageRank', 'https://en.wikipedia.org/wiki/Web_page'],
-  'https://en.wikipedia.org/wiki/Search_engine': ['https://en.wikipedia.org/wiki/Google', 'https://en.wikipedia.org/wiki/Web_search_engine']
-}
-
